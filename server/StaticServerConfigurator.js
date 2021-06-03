@@ -51,7 +51,7 @@ function StaticServerConfigurator() {
             }
           }
         } else {
-          return;
+          return next();
         }
       }
 
