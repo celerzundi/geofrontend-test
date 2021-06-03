@@ -126,6 +126,7 @@ function StaticServerConfigurator() {
     app.use('/', hasProtectedAccess, express.static(geoFrontServerBundlePath));
 
     app.get("*", hasProtectedAccess, function (req, res) {
+      console.log("serving index html")
       res.sendFile('/index.html', { root: geoFrontServerBundlePath })
     });
 
