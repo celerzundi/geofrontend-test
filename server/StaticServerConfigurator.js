@@ -5,7 +5,7 @@ const uuid = require('uuid');
 
 function StaticServerConfigurator() {
 
-  this.start = function(express, app) {
+  this.start = function (express, app) {
 
     logger.info("Security:" + (properties.server.security.enable));
 
@@ -15,7 +15,7 @@ function StaticServerConfigurator() {
 
     securityConfigurator.initialize(properties.server.security, app);
 
-    var hasProtectedAccess = function(req, res, next) {
+    var hasProtectedAccess = function (req, res, next) {
 
       logger.debug("requested resource:" + req.originalUrl);
 
@@ -26,9 +26,9 @@ function StaticServerConfigurator() {
       // - /whatever/../../
 
       //just for settigns.json
-      if(req.path.endsWith("/settings.json")){
+      if (req.path.endsWith("/settings.json")) {
         //not a session
-        if(!req.session.connectedUserInformation){
+        if (!req.session.connectedUserInformation) {
           var settings = {};
           settings.session = {};
           settings.session.expiredSession = true;
@@ -36,24 +36,26 @@ function StaticServerConfigurator() {
           return;
         }
         // comes from settings and has a valid session, go to hasProtectedAccess validation
-      }else{
+      } else {
         //any other request
         //has almost one access and sign button was pressed
         console.log(req.path)
-        if(!req.path.endsWith("/public/login")){
-          logger.debug("req.session.hasAlreadyEntered:"+req.session.hasAlreadyEntered)
-          logger.debug("req.session.signinStarted:"+req.session.signinStarted)
-          if(typeof req.session.hasAlreadyEntered === 'undefined' || typeof req.session.signinStarted === 'undefined'){
-            if(properties.server.enableWelcomePage === true){
+        if (!req.path.endsWith("/public/login")) {
+          logger.debug("req.session.hasAlreadyEntered:" + req.session.hasAlreadyEntered)
+          logger.debug("req.session.signinStarted:" + req.session.signinStarted)
+          if (typeof req.session.hasAlreadyEntered === 'undefined' || typeof req.session.signinStarted === 'undefined') {
+            if (properties.server.enableWelcomePage === true) {
               req.session.hasAlreadyEntered = true;
               res.redirect("/access");
               return;
             }
           }
+        } else {
+          return;
         }
       }
 
-      logger.debug("validating protected access:"+ req.originalUrl)
+      logger.debug("validating protected access:" + req.originalUrl)
       try {
         securityConfigurator.hasProtectedAccess(req, res, next);
       } catch (error) {
@@ -64,16 +66,16 @@ function StaticServerConfigurator() {
 
     // data from server  to frontend
     // here call to internal systems or whatever to get data
-    app.get('/error', function(req, res) {
+    app.get('/error', function (req, res) {
       res.render("error.ejs", {
-          request_id: sessions[req.sessionID]
+        request_id: sessions[req.sessionID]
       });
     });
 
 
-    if (properties.server.logout && properties.server.logout.length>0) {
-      logger.info("logout is enabled:"+properties.server.logout);
-      app.get(properties.server.logout, function(req, res) {
+    if (properties.server.logout && properties.server.logout.length > 0) {
+      logger.info("logout is enabled:" + properties.server.logout);
+      app.get(properties.server.logout, function (req, res) {
         logger.info("logout");
         req.session.destroy();
         res.redirect("/");
@@ -83,7 +85,7 @@ function StaticServerConfigurator() {
 
     // data from server  to frontend
     // here call to internal systems or whatever to get data
-    app.get('/settings.json', hasProtectedAccess, function(req, res) {
+    app.get('/settings.json', hasProtectedAccess, function (req, res) {
 
       if (req.session.connectedUserInformation) {
         var settings = {};
@@ -100,22 +102,22 @@ function StaticServerConfigurator() {
       }
     });
 
-    app.get('/access', function(req, res) {
-      if(properties.server.enableWelcomePage === true){
+    app.get('/access', function (req, res) {
+      if (properties.server.enableWelcomePage === true) {
         res.render("welcome.ejs", {});
-      }else{
+      } else {
         res.redirect("/");
       }
     });
 
-    app.get('/signin', function(req, res) {
+    app.get('/signin', function (req, res) {
       logger.debug("/signin started")
-      if(properties.server.enableWelcomePage === true){
+      if (properties.server.enableWelcomePage === true) {
         req.session.hasAlreadyEntered = true;
         req.session.signinStarted = true;
         logger.debug("no welcome page was enabled")
         res.redirect("/");
-      }else{
+      } else {
         res.redirect("/");
       }
     });
@@ -123,16 +125,16 @@ function StaticServerConfigurator() {
     /* serve rest of web assets*/
     app.use('/', hasProtectedAccess, express.static(geoFrontServerBundlePath));
 
-    app.get("*", hasProtectedAccess, function(req, res) {
+    app.get("*", hasProtectedAccess, function (req, res) {
       res.sendFile('/index.html', { root: geoFrontServerBundlePath })
     });
 
   }
 
-  function sendFile(res, commmonPagesPath, commonPage){
-    if(commmonPagesPath.startsWith(".")){
-      res.sendFile(commmonPagesPath + '/internalError.html',{ root: geoFrontServerHomePath })
-    }else{
+  function sendFile(res, commmonPagesPath, commonPage) {
+    if (commmonPagesPath.startsWith(".")) {
+      res.sendFile(commmonPagesPath + '/internalError.html', { root: geoFrontServerHomePath })
+    } else {
       res.sendFile(commmonPagesPath + commonPage)
     }
   }
