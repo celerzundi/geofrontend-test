@@ -39,13 +39,16 @@ function StaticServerConfigurator() {
       }else{
         //any other request
         //has almost one access and sign button was pressed
-        logger.debug("req.session.hasAlreadyEntered:"+req.session.hasAlreadyEntered)
-        logger.debug("req.session.signinStarted:"+req.session.signinStarted)
-        if(typeof req.session.hasAlreadyEntered === 'undefined' || typeof req.session.signinStarted === 'undefined'){
-          if(properties.server.enableWelcomePage === true){
-            req.session.hasAlreadyEntered = true;
-            res.redirect("/access");
-            return;
+        console.log(req.path)
+        if(!req.path.endsWith("/public/login")){
+          logger.debug("req.session.hasAlreadyEntered:"+req.session.hasAlreadyEntered)
+          logger.debug("req.session.signinStarted:"+req.session.signinStarted)
+          if(typeof req.session.hasAlreadyEntered === 'undefined' || typeof req.session.signinStarted === 'undefined'){
+            if(properties.server.enableWelcomePage === true){
+              req.session.hasAlreadyEntered = true;
+              res.redirect("/access");
+              return;
+            }
           }
         }
       }
