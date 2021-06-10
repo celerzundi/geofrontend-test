@@ -115,10 +115,8 @@ function StaticServerConfigurator() {
 
     app.post('/public/login', function(req, res) {
       if(properties.server.enablePublicLogin === true){
-        console.log("req")
-        console.log(req)
-        console.log("res")
-        console.log(res)
+        console.log('Got body:', req.body);
+        res.sendStatus(200);
       }else{
         res.redirect("/");
       }
