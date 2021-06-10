@@ -105,9 +105,20 @@ function StaticServerConfigurator() {
       }
     });
 
-    app.get('/access', function(req, res) {
+    app.get('/public/login', function(req, res) {
       if(properties.server.enablePublicLogin === true){
         res.render("publicLogin.ejs", {});
+      }else{
+        res.redirect("/");
+      }
+    });
+
+    app.post('/public/login', function(req, res) {
+      if(properties.server.enablePublicLogin === true){
+        console.log("req")
+        console.log(req)
+        console.log("res")
+        console.log(res)
       }else{
         res.redirect("/");
       }
