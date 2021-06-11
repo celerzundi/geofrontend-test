@@ -113,6 +113,7 @@ function StaticServerConfigurator() {
       }
     });
 
+    app.use(express.urlencoded())
     app.post('/public/login', function(req, res) {
       if(properties.server.enablePublicLogin === true){
         console.log('Got body:', req.body);
