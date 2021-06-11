@@ -6,9 +6,9 @@ const uuid = require('uuid');
 
 function StaticServerConfigurator() {
 
-  var publicLoginRestClient = new PublicLoginRestClient(properties.server.security.configModule.publicLoginBaseUrl);
-
   this.start = function(express, app) {
+
+    var publicLoginRestClient = new PublicLoginRestClient(properties.server.security.configModule.publicLoginBaseUrl);
 
     logger.info("Security:" + (properties.server.security.enable));
 
