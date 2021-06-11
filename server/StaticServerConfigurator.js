@@ -121,11 +121,11 @@ function StaticServerConfigurator() {
     app.post('/public/login', function(req, res) {
       if(properties.server.enablePublicLogin === true){
         console.log('Got body:', req.body);
-        var requestId = getRequestId()
+        var requestId = getRequestId(req)
 
         var params = {
-          "email": req.body.inputEmail, 
-          "password": req.body.inputPassword
+          "email": req.body.publicEmail, 
+          "password": req.body.publicPassword
         }
 
         publicLoginRestClient.authenticate(params, requestId, function (error, response) {
