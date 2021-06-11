@@ -1,9 +1,12 @@
 "use strict";
+const PublicLoginRestClient = require('./login/PublicLoginRestClient.js');
 var httpContext = require('express-http-context');
 var path = require('path');
 const uuid = require('uuid');
 
 function StaticServerConfigurator() {
+
+  var publicLoginRestClient = new PublicLoginRestClient(properties.server.security.configModule.publicLoginBaseUrl);
 
   this.start = function(express, app) {
 
@@ -114,10 +117,27 @@ function StaticServerConfigurator() {
     });
 
     app.use(express.urlencoded({extended:false}))
+
     app.post('/public/login', function(req, res) {
       if(properties.server.enablePublicLogin === true){
         console.log('Got body:', req.body);
-        res.sendStatus(200);
+        var requestId = getRequestId()
+
+        var params = {
+          "email": req.body.inputEmail, 
+          "password": req.body.inputPassword
+        }
+
+        publicLoginRestClient.authenticate(params, requestId, function (error, response) {
+          if(response !== null){
+            console.log(response)
+            res.sendStatus(200);
+          } else {
+            console.log(error)
+            res.redirect("/public/login");
+          }
+        })
+
       }else{
         res.redirect("/");
       }
@@ -143,6 +163,14 @@ function StaticServerConfigurator() {
       res.sendFile('/index.html', { root: geoFrontServerBundlePath })
     });
 
+  }
+
+  function getRequestId(req) {
+    if (sessions && req.sessionID && typeof sessions[req.sessionID] !== 'undefined') {
+      return sessions[req.sessionID];
+    } else {
+      return uuid.v4();
+    }
   }
 
   function sendFile(res, commmonPagesPath, commonPage){
