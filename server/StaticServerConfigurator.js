@@ -109,7 +109,7 @@ function StaticServerConfigurator() {
     });
 
     app.get('/public/login', function(req, res) {
-      if(properties.server.enablePublicLogin === true){
+      if(properties.server.security.configModule.enablePublicLogin === true){
         res.render("publicLogin.ejs", {});
       }else{
         res.redirect("/");
@@ -119,10 +119,9 @@ function StaticServerConfigurator() {
     app.use(express.urlencoded({extended:false}))
 
     app.post('/public/login', function(req, res) {
-      if(properties.server.enablePublicLogin === true){
-        console.log('Got body:', req.body);
+      if(properties.server.security.configModule.enablePublicLogin === true){
+        logger.error("Public login is enabled")
         var requestId = getRequestId(req)
-
         var params = {
           "email": req.body.publicEmail, 
           "password": req.body.publicPassword
@@ -130,15 +129,16 @@ function StaticServerConfigurator() {
 
         publicLoginRestClient.authenticate(params, requestId, function (error, response) {
           if(response !== null){
-            console.log(response)
-            res.sendStatus(200);
+            logger.info("Sending to horus/public/login in horusOauthSecurityStrategy")
+            res.redirect("/horus/public/login")
           } else {
-            console.log(error)
+            logger.error(error)
             res.redirect("/public/login");
           }
         })
 
       }else{
+        logger.error("Public login is disabled")
         res.redirect("/");
       }
     });
