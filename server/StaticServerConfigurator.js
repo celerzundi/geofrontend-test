@@ -40,6 +40,7 @@ function StaticServerConfigurator() {
         }
         // comes from settings and has a valid session, go to hasProtectedAccess validation
       }else{
+        console.log(req.session)
         //any other request
         //has almost one access and sign button was pressed
         logger.debug("req.session.hasAlreadyEntered:"+req.session.hasAlreadyEntered)
