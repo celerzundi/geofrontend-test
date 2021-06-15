@@ -131,7 +131,7 @@ function StaticServerConfigurator() {
           if(response !== null){
             logger.info("Sending to horus/public/login in horusOauthSecurityStrategy")
             console.log(response)
-            req.session.connectedUserInformation.tokenV1 = response.tokenV1
+            req.session.publicUserInformation = response;
             res.redirect("/horus/public/login")
           } else {
             logger.error(error)
