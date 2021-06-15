@@ -130,7 +130,6 @@ function StaticServerConfigurator() {
         publicLoginRestClient.authenticate(params, requestId, function (error, response) {
           if(response !== null){
             logger.info("Sending to horus/public/login in horusOauthSecurityStrategy")
-            console.log(response)
             req.session.publicUserInformation = response;
             res.redirect("/horus/public/login")
           } else {
